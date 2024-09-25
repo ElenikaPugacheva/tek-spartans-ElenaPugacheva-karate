@@ -9,6 +9,7 @@ public class TestRunner {
         return Karate
                 .run("classpath:features")
                 .karateEnv("dev")
-                .tags("@CreateAccount_2");
+                .tags("@CreateAccount_2")
+                .outputCucumberJson(true);
     }
 }
