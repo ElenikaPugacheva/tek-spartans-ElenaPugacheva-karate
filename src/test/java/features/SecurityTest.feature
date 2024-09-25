@@ -1,28 +1,35 @@
-Feature: API testing for Security Functions
-
+Feature: API testing for security functions
+  Background: Setup test
+    Given url BASE_URL
+    Given path '/api/token'
+  @UserStory1
   Scenario: Valid token with valid credentials
-    Given url 'https://dev.insurance-api.tekschool-students.com'
-    Given path '/api/token'
-    Given request
-    """
-      {
-          "username": "supervisor",
-          "password": "tek_supervisor"
-      }
-    """
-    When method post
-    Then status 200
-
-
-  Scenario: Invalid username with valid password
-    Given url 'https://dev.insurance-api.tekschool-students.com'
-    Given path '/api/token'
     Given request
       """
       {
-        "username": "supervisor21",
+        "username": "supervisor",
         "password": "tek_supervisor"
       }
       """
     When method post
-    Then status 404
+    Then status 200
+    Then print response
+    Then assert response.username == "supervisor"
+
+  @UserStory2
+  Scenario Outline: Valid token with invalid credentials
+    Given request
+      """
+      {
+        "username": "<username>",
+        "password": "<password>"
+      }
+      """
+    When method post
+    Then status <statusCode>
+    Then print response
+    Then assert response.errorMessage == "<error>"
+    Examples:
+      | username   | password       | statusCode | error                  |
+      | invalid    | tek_supervisor | 404        | User invalid not found |
+      | supervisor | wrongpassword  | 400        | Password not matched   |
